@@ -8,11 +8,12 @@ import {
   Button,
   Row,
   Col,
-  NavDropdown
+  NavDropdown,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import categoryApi from "../api/categoryApi";
+import axiosClient from "../api/axiosClient";
 import {
   FaSearch,
   FaShoppingCart,
@@ -24,6 +25,7 @@ import {
 const Header = () => {
   const [categories, setCategories] = useState([]);
   const [keyword, setKeyword] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef();
@@ -42,20 +44,19 @@ const Header = () => {
     fetchCategories();
   }, []);
 
-  // 👤 Lấy thông tin user + theo dõi thay đổi
+  // 👤 Lấy user
   useEffect(() => {
     const loadUser = () => {
       const user = localStorage.getItem("userInfo");
       setUserInfo(user ? JSON.parse(user) : null);
-      setShowMenu(false); // reset dropdown
+      setShowMenu(false);
     };
     loadUser();
     window.addEventListener("userChange", loadUser);
     return () => window.removeEventListener("userChange", loadUser);
   }, []);
 
-
-  // Đóng menu khi click ra ngoài
+  // 🧩 Đóng menu khi click ngoài
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -66,11 +67,34 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 🔍 Gọi API gợi ý khi người dùng gõ
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (keyword.trim()) {
+        try {
+          const res = await axiosClient.get(`/products?keyword=${keyword}`);
+          // chỉ lấy 5 sản phẩm đầu
+          setSuggestions(res.data.slice(0, 5));
+        } catch (err) {
+          console.error("Lỗi gợi ý tìm kiếm:", err);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(delayDebounce);
+  }, [keyword]);
+
+  // 🔎 Khi nhấn Enter hoặc click nút tìm
   const handleSearch = (e) => {
     e.preventDefault();
-    if (keyword.trim()) navigate(`/search/${keyword}`);
+    if (keyword.trim()) {
+      navigate(`/search/${keyword}`);
+      setSuggestions([]);
+    }
   };
 
+  // 🚪 Đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
     setUserInfo(null);
@@ -90,13 +114,11 @@ const Header = () => {
       >
         <Container>
           <Row className="py-2 align-items-center text-center text-md-start">
-            {/* Bên trái: hotline */}
             <Col md={6} className="text-muted mb-2 mb-md-0">
               <FaPhoneAlt className="me-2 text-primary" />
               Hỗ trợ khách hàng: <strong>1900 123 456</strong>
             </Col>
 
-            {/* Bên phải: theo dõi đơn hàng + user */}
             <Col md={6} className="text-md-end">
               <Nav className="justify-content-end small align-items-center flex-wrap">
                 <LinkContainer to="/order-tracking">
@@ -116,19 +138,15 @@ const Header = () => {
                     </LinkContainer>
                   </>
                 ) : (
-                  <div
-                    className="position-relative d-inline-block"
-                    ref={menuRef}
-                  >
+                  <div className="position-relative d-inline-block" ref={menuRef}>
                     <button
                       className="btn btn-link text-muted d-inline-flex align-items-center p-0"
                       onClick={() => setShowMenu(!showMenu)}
                       style={{ textDecoration: "none", fontSize: "0.75rem" }}
                     >
-                      <FaUser className="me-2 text-secondary"/>
+                      <FaUser className="me-2 text-secondary" />
                       {userInfo.name}
                     </button>
-
 
                     {showMenu && (
                       <div
@@ -181,54 +199,70 @@ const Header = () => {
             E-Shop
           </Navbar.Brand>
 
-          {/* Giữa: tìm kiếm + danh mục */}
+          {/* Tìm kiếm + danh mục */}
           <Form
-            className="d-flex flex-column mx-3 w-60  mx-auto mx-lg-3"
+            className="d-flex flex-column mx-3 w-60 mx-auto mx-lg-3 position-relative"
             onSubmit={handleSearch}
           >
-            {/* Ô tìm kiếm */}
-            <div className="d-flex">
+            <div className="d-flex position-relative">
               <FormControl
                 type="search"
                 placeholder="Tìm sản phẩm..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 className="me-2"
+                autoComplete="off"
               />
               <Button variant="primary" type="submit">
                 <FaSearch />
               </Button>
+
+              {/* Gợi ý */}
+              {suggestions.length > 0 && (
+                <ul
+                  className="list-unstyled position-absolute bg-white border rounded shadow-sm mt-2"
+                  style={{
+                    top: "100%",
+                    left: 0,
+                    width: "100%",
+                    zIndex: 2000,
+                    maxHeight: "250px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {suggestions.map((item) => (
+                    <li
+                      key={item._id}
+                      className="px-3 py-2 d-flex align-items-center"
+                      style={{ cursor: "pointer" }}
+                      onMouseDown={() => {
+                        navigate(`/product/${item._id}`);
+                        setSuggestions([]);
+                        setKeyword("");
+                      }}
+                    >
+                      
+                      <span>{item.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Danh mục */}
-            <Nav className="justify-content-center flex-wrap d-none d-lg-flex">
+            <Nav className="justify-content-center flex-wrap d-none d-lg-flex mt-2">
               {categories.slice(0, 5).map((cat) => (
                 <Nav.Link
                   key={cat._id}
                   as={Link}
                   to={`/category/${cat._id}`}
                   className="text-dark fw-semibold mx-2"
-                  style={{ fontSize: "0.9rem" }} // 👈 chữ nhỏ lại
+                  style={{ fontSize: "0.9rem" }}
                 >
                   {cat.name}
                 </Nav.Link>
               ))}
             </Nav>
-
-            {/* Màn hình nhỏ: Dropdown danh mục */}
-            <div className="d-flex justify-content-center d-lg-none">
-              <NavDropdown title="Danh mục" id="category-dropdown">
-                {categories.map((cat) => (
-                  <NavDropdown.Item
-                    key={cat._id}
-                    as={Link}
-                    to={`/category/${cat._id}`}
-                  >
-                    {cat.name}
-                  </NavDropdown.Item>
-                ))}
-              </NavDropdown>
-            </div>
           </Form>
 
           {/* Giỏ hàng */}
@@ -241,7 +275,6 @@ const Header = () => {
               style={{ textDecoration: "none" }}
             >
               <FaShoppingCart className="fs-3" />
-              {/* 🔴 Badge số lượng */}
               <span
                 className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                 style={{ fontSize: "0.6rem" }}

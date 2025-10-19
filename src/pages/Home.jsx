@@ -1,85 +1,202 @@
-import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Spinner,
+  Carousel,
+  Badge,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import productApi from "../api/productApi";
+import categoryApi from "../api/categoryApi";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Gọi API khi trang load
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/products');
-        setProducts(res.data);
+        const [proRes, catRes] = await Promise.all([
+          productApi.getAll(),
+          categoryApi.getAll(),
+        ]);
+        setProducts(proRes.data || []);
+        setCategories(catRes.data || []);
       } catch (error) {
-        console.error('Lỗi tải sản phẩm:', error);
+        console.error("Lỗi tải dữ liệu:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
-  return (
-    <Container className="mt-4">
-      <h2 className="text-center mb-4 text-primary fw-bold">Sản phẩm nổi bật</h2>
+  const flashSale = products.slice(0, 4);
+  const featured = products.slice(4, 12);
 
-      {loading ? (
-        <div className="text-center my-5">
-          <Spinner animation="border" variant="primary" />
+  return (
+    <div className="home-page">
+      {/* 🔹 1. Slider */}
+      <Carousel fade className="shadow-sm rounded mb-4">
+        <Carousel.Item>
+          <img
+            className="d-block w-100 rounded"
+            src="https://cdn.tgdd.vn/2023/09/banner/1200x300-1200x300-6.png"
+            alt="Slide 1"
+            style={{ height: "400px", objectFit: "cover" }}
+          />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100 rounded"
+            src="https://cdn.tgdd.vn/2023/10/banner/samsung-1200x300-2.png"
+            alt="Slide 2"
+            style={{ height: "400px", objectFit: "cover" }}
+          />
+        </Carousel.Item>
+      </Carousel>
+
+      {/* 🔸 2. Banner phụ */}
+      <Container className="mb-5">
+        <Row className="g-3">
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://cdn.tgdd.vn/2024/05/banner/laptopgiamgia-380x200.png"
+                alt="Banner 1"
+              />
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://cdn.tgdd.vn/2024/06/banner/saleapple-380x200.png"
+                alt="Banner 2"
+              />
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://cdn.tgdd.vn/2024/05/banner/salephukien-380x200.png"
+                alt="Banner 3"
+              />
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+
+      {/* ⚡ 3. Flash Sale */}
+      <Container className="mb-5">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="fw-bold text-danger">
+            ⚡ Flash Sale
+          </h3>
+          <Button variant="outline-danger" onClick={() => navigate("/products")}>
+            Xem tất cả
+          </Button>
         </div>
-      ) : (
-        <Row>
-          {products.length === 0 ? (
-            <Col className="text-center text-muted">Không có sản phẩm nào</Col>
-          ) : (
-            products.map((product) => (
-              <Col
-                key={product._id}
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                className="mb-4 d-flex"
-              >
-                <Card className="shadow-sm flex-fill border-0 rounded-4">
-                  <Card.Img
-                    variant="top"
-                    src={
-                      product.image ||
-                      'https://via.placeholder.com/300x200?text=No+Image'
-                    }
-                    alt={product.name}
-                    style={{
-                      height: '200px',
-                      objectFit: 'cover',
-                      borderTopLeftRadius: '1rem',
-                      borderTopRightRadius: '1rem',
-                    }}
-                  />
-                  <Card.Body>
-                    <Card.Title className="text-truncate">{product.name}</Card.Title>
-                    <Card.Text className="text-muted small">
-                      {product.brand?.name || 'Thương hiệu'} <br />
-                      <span className="fw-bold text-primary">
-                        {product.price?.toLocaleString()}₫
-                      </span>
-                    </Card.Text>
-                    <Button
-                      variant="outline-primary"
-                      className="w-100 rounded-pill"
+
+        {loading ? (
+          <div className="text-center my-5">
+            <Spinner animation="border" variant="danger" />
+          </div>
+        ) : (
+          <Row className="g-4">
+            {flashSale.map((p) => (
+              <Col key={p._id} xs={12} sm={6} md={3}>
+                <Card
+                  className="border-0 shadow-sm h-100 rounded-4 overflow-hidden"
+                  onClick={() => navigate(`/product/${p._id}`)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="position-relative">
+                    <Card.Img
+                      src={
+                        p.image ||
+                        "https://via.placeholder.com/300x200?text=No+Image"
+                      }
+                      alt={p.name}
+                      style={{
+                        height: "200px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <Badge
+                      bg="danger"
+                      className="position-absolute top-0 start-0 m-2"
                     >
-                      Xem chi tiết
+                      -20%
+                    </Badge>
+                  </div>
+                  <Card.Body>
+                    <Card.Title className="text-truncate">{p.name}</Card.Title>
+                    <div className="fw-bold text-danger">
+                      {p.price?.toLocaleString()}₫
+                    </div>
+                    <Button variant="outline-danger" className="w-100 mt-2">
+                      Mua ngay
                     </Button>
                   </Card.Body>
                 </Card>
               </Col>
-            ))
-          )}
-        </Row>
-      )}
-    </Container>
+            ))}
+          </Row>
+        )}
+      </Container>
+
+      {/* 🛍️ 4. Sản phẩm nổi bật */}
+      <Container className="mb-5">
+        <h3 className="fw-bold text-primary mb-3">Sản phẩm nổi bật</h3>
+
+        {loading ? (
+          <div className="text-center my-5">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        ) : (
+          <>
+            <Row className="g-4">
+              {featured.map((p) => (
+                <Col key={p._id} xs={12} sm={6} md={4} lg={3}>
+                  <Card
+                    className="border-0 shadow-sm h-100 rounded-4 overflow-hidden"
+                    onClick={() => navigate(`/product/${p._id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={p.image || "https://via.placeholder.com/300x200?text=No+Image"}
+                      alt={p.name}
+                      style={{ height: "220px", objectFit: "cover" }}
+                    />
+                    <Card.Body>
+                      <Card.Title className="text-truncate">{p.name}</Card.Title>
+                      <div className="fw-bold text-primary">
+                        {p.price?.toLocaleString()}₫
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            {/* Nút Xem tất cả ở dưới */}
+            <div className="text-center mt-4">
+              <Button variant="outline-primary" onClick={() => navigate("/products")}>
+                Xem tất cả
+              </Button>
+            </div>
+          </>
+        )}
+      </Container>
+
+    </div>
   );
 };
 
