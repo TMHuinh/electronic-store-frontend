@@ -4,6 +4,7 @@ import axiosClient from "../api/axiosClient";
 import { Carousel, Button, Row, Col, Form, Card, Badge } from "react-bootstrap";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useCart } from "../context/CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const ProductDetail = () => {
   const [comment, setComment] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [userInfo, setUserInfo] = useState(null);
+  const { addItem } = useCart();
 
   // Hiển thị sao trung bình hoặc sao từng review
   const renderStars = (rating) => {
@@ -87,8 +89,8 @@ const ProductDetail = () => {
     product.rating && product.rating > 0
       ? product.rating
       : reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-      : 0;
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
 
   return (
     <div className="container py-4">
@@ -147,8 +149,7 @@ const ProductDetail = () => {
           <div className="d-flex gap-2">
             <Button
               variant="primary"
-              onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              onClick={() => addItem(product._id, quantity)}
             >
               Thêm vào giỏ
             </Button>
@@ -209,9 +210,8 @@ const ProductDetail = () => {
                     {[1, 2, 3, 4, 5].map(num => (
                       <FaStar
                         key={num}
-                        className={`me-1 cursor-pointer ${
-                          num <= rating ? "text-warning" : "text-secondary"
-                        }`}
+                        className={`me-1 cursor-pointer ${num <= rating ? "text-warning" : "text-secondary"
+                          }`}
                         onClick={() => setRating(num)}
                       />
                     ))}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom"; 
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
 import productApi from "../api/productApi";
 
@@ -46,8 +46,9 @@ const ProductList = () => {
   else if (location.pathname.startsWith("/brand/")) title = "Sản phẩm theo thương hiệu";
 
   return (
-    <Container className="mt-4">
-      <h2 className="fw-bold text-primary mb-3 text-center">{title}</h2>
+    <Container className="mt-2">
+      <h2 className="fw-bold text-primary mb-5 text-center">{title}</h2>
+      <br />
 
       {loading ? (
         <div className="text-center py-5">
@@ -69,7 +70,10 @@ const ProductList = () => {
                   >
                     <Card.Img
                       variant="top"
-                      src={p.image || "https://via.placeholder.com/300x200"}
+                      src={
+                        p.images?.[1]?.url ||
+                        "https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760331029/products/bqlaqfriqvzfnagwpoic.jpg"
+                      }
                       alt={p.name}
                       style={{
                         height: "200px",

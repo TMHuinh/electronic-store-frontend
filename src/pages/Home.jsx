@@ -47,50 +47,20 @@ const Home = () => {
         <Carousel.Item>
           <img
             className="d-block w-100 rounded"
-            src="https://cdn.tgdd.vn/2023/09/banner/1200x300-1200x300-6.png"
+            src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760978844/products/ezux3gpyahq7zqzonon3.png"
             alt="Slide 1"
-            style={{ height: "400px", objectFit: "cover" }}
+            style={{ height: "450px", objectFit: "" }}
           />
         </Carousel.Item>
         <Carousel.Item>
           <img
             className="d-block w-100 rounded"
-            src="https://cdn.tgdd.vn/2023/10/banner/samsung-1200x300-2.png"
+            src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760980888/products/tmyekxt3q0t11mreabqf.jpg"
             alt="Slide 2"
-            style={{ height: "400px", objectFit: "cover" }}
+            style={{ height: "450px", objectFit: "" }}
           />
         </Carousel.Item>
       </Carousel>
-
-      {/* 🔸 2. Banner phụ */}
-      <Container className="mb-5">
-        <Row className="g-3">
-          <Col md={4}>
-            <Card className="border-0 shadow-sm">
-              <Card.Img
-                src="https://cdn.tgdd.vn/2024/05/banner/laptopgiamgia-380x200.png"
-                alt="Banner 1"
-              />
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="border-0 shadow-sm">
-              <Card.Img
-                src="https://cdn.tgdd.vn/2024/06/banner/saleapple-380x200.png"
-                alt="Banner 2"
-              />
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="border-0 shadow-sm">
-              <Card.Img
-                src="https://cdn.tgdd.vn/2024/05/banner/salephukien-380x200.png"
-                alt="Banner 3"
-              />
-            </Card>
-          </Col>
-        </Row>
-      </Container>
 
       {/* ⚡ 3. Flash Sale */}
       <Container className="mb-5">
@@ -119,7 +89,7 @@ const Home = () => {
                   <div className="position-relative">
                     <Card.Img
                       src={
-                        p.image ||
+                        p.images?.[0]?.url ||
                         "https://via.placeholder.com/300x200?text=No+Image"
                       }
                       alt={p.name}
@@ -130,7 +100,7 @@ const Home = () => {
                     />
                     <Badge
                       bg="danger"
-                      className="position-absolute top-0 start-0 m-2"
+                      className="position-absolute top-0 end-0 m-2"
                     >
                       -20%
                     </Badge>
@@ -171,7 +141,8 @@ const Home = () => {
                   >
                     <Card.Img
                       variant="top"
-                      src={p.image || "https://via.placeholder.com/300x200?text=No+Image"}
+                      src={p.images?.[1]?.url ||
+                        "https://bizweb.dktcdn.net/thumb/1024x1024/100/228/168/products/sdp1.jpg?v=1582190218723"}
                       alt={p.name}
                       style={{ height: "220px", objectFit: "cover" }}
                     />
@@ -194,6 +165,39 @@ const Home = () => {
             </div>
           </>
         )}
+      </Container>
+
+      {/* 🔸 2. Banner phụ */}
+      <Container className="mb-5">
+        <Row className="g-3">
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760980019/products/mg2e1cgkxap01dhc6uk7.jpg"
+                alt="Banner 1"
+                style={{ height: "220px", objectFit: "cover" }}
+              />
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981074/products/ggduoo62ic9op12dibit.webp"
+                alt="Banner 2"
+                style={{ height: "220px", objectFit: "cover" }}
+              />
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="border-0 shadow-sm">
+              <Card.Img
+                src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981387/products/ysua5eppa73ygutcm4qt.jpg"
+                alt="Banner 3"
+                style={{ height: "220px", objectFit: "" }}
+              />
+            </Card>
+          </Col>
+        </Row>
       </Container>
 
     </div>

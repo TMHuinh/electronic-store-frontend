@@ -21,6 +21,8 @@ import {
   FaPhoneAlt,
   FaTruck,
 } from "react-icons/fa";
+import { useCart } from "../context/CartContext";
+
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
@@ -30,6 +32,9 @@ const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef();
   const navigate = useNavigate();
+  const { cart } = useCart();
+  const totalItems = cart?.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
+
 
   // 🗂️ Lấy danh mục
   useEffect(() => {
@@ -241,7 +246,7 @@ const Header = () => {
                         setKeyword("");
                       }}
                     >
-                      
+
                       <span>{item.name}</span>
                     </li>
                   ))}
@@ -279,7 +284,7 @@ const Header = () => {
                 className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                 style={{ fontSize: "0.6rem" }}
               >
-                {localStorage.getItem("cartCount") || 0}
+                {totalItems}
               </span>
             </Button>
           </div>

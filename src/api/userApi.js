@@ -7,6 +7,10 @@ const userApi = {
     axiosClient.get("/users/profile", {
       headers: { Authorization: `Bearer ${token}` },
     }),
+  updateProfile: (data, token) =>
+    axiosClient.put("/users/profile", data, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };
 
 export default userApi;

@@ -12,6 +12,9 @@ import SearchPage from "./pages/SearchPage";
 import ProductDetail from "./pages/ProductDetail";
 import ListReview from "./pages/ListReview";
 import axiosClient from "./api/axiosClient";
+import ScrollToTop from "./components/ScrollToTop";
+import CartPage from "./pages/CartPage";
+import Profile from "./pages/Profile";
 
 // TitleHandler component
 const TitleHandler = () => {
@@ -28,6 +31,8 @@ const TitleHandler = () => {
         else if (location.pathname === "/register") title = "Đăng ký";
         else if (location.pathname.startsWith("/products")) title = "Danh sách sản phẩm";
         else if (location.pathname.startsWith("/search/")) title = "Kết quả tìm kiếm";
+        else if (location.pathname.startsWith("/cart")) title = "Giỏ hàng";
+        else if (location.pathname.startsWith("/profile")) title = "Thông tĩn";
 
         // Trang chi tiết sản phẩm
         else if (location.pathname.startsWith("/product/")) {
@@ -71,6 +76,7 @@ const TitleHandler = () => {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <TitleHandler />
       <main className="py-5 mt-1">
@@ -85,6 +91,8 @@ function App() {
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/reviews/product/:id" element={<ListReview />} />
             <Route path="/brand/:id" element={<ProductList />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </Container>
       </main>
