@@ -15,6 +15,9 @@ import axiosClient from "./api/axiosClient";
 import ScrollToTop from "./components/ScrollToTop";
 import CartPage from "./pages/CartPage";
 import Profile from "./pages/Profile";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
 
 // TitleHandler component
 const TitleHandler = () => {
@@ -32,7 +35,10 @@ const TitleHandler = () => {
         else if (location.pathname.startsWith("/products")) title = "Danh sách sản phẩm";
         else if (location.pathname.startsWith("/search/")) title = "Kết quả tìm kiếm";
         else if (location.pathname.startsWith("/cart")) title = "Giỏ hàng";
-        else if (location.pathname.startsWith("/profile")) title = "Thông tĩn";
+        else if (location.pathname.startsWith("/profile")) title = "Thông tin";
+        else if (location.pathname.startsWith("/checkout")) title = "Thanh toán";
+        else if (location.pathname.startsWith("/orders/")) title = "Chi tiết đơn hàng";
+        else if (location.pathname.startsWith("/orders")) title = "Đơn hàng";
 
         // Trang chi tiết sản phẩm
         else if (location.pathname.startsWith("/product/")) {
@@ -93,6 +99,9 @@ function App() {
             <Route path="/brand/:id" element={<ProductList />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
+            <Route path="/orders/:id" element={<OrderDetailPage />} />
           </Routes>
         </Container>
       </main>

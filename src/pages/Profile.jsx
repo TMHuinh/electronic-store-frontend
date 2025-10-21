@@ -71,7 +71,7 @@ const Profile = () => {
     <Container className="my-5">
       <Row className="justify-content-center">
         <Col md={6}>
-          <h2 className="text-center mb-4">👤 Thông tin cá nhân</h2>
+          <h2 className="text-center mb-4 fw-bold text-primary">👤 Thông tin cá nhân</h2>
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">

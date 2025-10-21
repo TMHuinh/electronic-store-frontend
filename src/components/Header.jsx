@@ -126,7 +126,7 @@ const Header = () => {
 
             <Col md={6} className="text-md-end">
               <Nav className="justify-content-end small align-items-center flex-wrap">
-                <LinkContainer to="/order-tracking">
+                <LinkContainer to="/orders">
                   <Nav.Link className="text-muted me-3 d-flex align-items-center">
                     <FaTruck className="me-1 text-secondary" />
                     Theo dõi đơn hàng

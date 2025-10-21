@@ -23,7 +23,7 @@ const CartPage = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">🛒 Giỏ hàng của bạn</h3>
+      <h3 className="mb-4 fw-bold text-primary">🛒 Giỏ hàng của bạn</h3>
       <table className="table align-middle">
         <thead>
           <tr>
