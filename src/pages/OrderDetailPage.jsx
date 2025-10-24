@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import orderApi from "../api/orderApi";
 import { toast } from "react-toastify";
-import { Table, Badge, Spinner, Card, Row, Col, Image, Button } from "react-bootstrap";
+import { Table, Badge, Spinner, Card, Row, Col, Image } from "react-bootstrap";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -59,21 +60,30 @@ const OrderDetailPage = () => {
   return (
     <div className="container py-1">
       <h2 className="mb-5 fw-bold text-primary text-center">
-        Chi tiết đơn hàng 
+        Chi tiết đơn hàng
       </h2>
 
       <Card className="mb-4 p-3">
         <Row className="mb-2">
           <Col md={6}>
             <h5>Thông tin giao hàng</h5>
-            <p className="mb-1"><strong>Mã đơn hàng: </strong>#{order._id}</p>
-            <p className="mb-1"><strong>Địa chỉ:</strong> {order.address}</p>
-            <p className="mb-1"><strong>Phương thức thanh toán:</strong> {order.paymentMethod}</p>
+            <p className="mb-1">
+              <strong>Mã đơn hàng: </strong>#{order._id}
+            </p>
+            <p className="mb-1">
+              <strong>Địa chỉ:</strong> {order.address}
+            </p>
+            <p className="mb-1">
+              <strong>Phương thức thanh toán:</strong> {order.paymentMethod}
+            </p>
           </Col>
           <Col md={6}>
             <h5>Trạng thái đơn hàng</h5>
             <div>{getStatusBadge(order.status)}</div>
-            <p className="mt-2"><strong>Ngày tạo:</strong> {new Date(order.createdAt).toLocaleDateString("vi-VN")}</p>
+            <p className="mt-2">
+              <strong>Ngày tạo:</strong>{" "}
+              {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+            </p>
           </Col>
         </Row>
       </Card>
@@ -90,8 +100,13 @@ const OrderDetailPage = () => {
         </thead>
         <tbody>
           {order.items.map((item, index) => (
-            <tr key={item.productId || index}>
-              <td className="align-middle d-flex align-items-center">
+            <tr
+              key={item.productId || index}
+              className="align-middle"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/product/${item.productId}`)}
+            >
+              <td className="d-flex align-items-center">
                 <Image
                   src={item.image || "/no-image.png"}
                   alt={item.name}
@@ -102,9 +117,9 @@ const OrderDetailPage = () => {
                 />
                 {item.name}
               </td>
-              <td className="align-middle">{item.price.toLocaleString()}₫</td>
-              <td className="align-middle">{item.quantity}</td>
-              <td className="align-middle fw-bold text-danger">
+              <td>{item.price.toLocaleString()}₫</td>
+              <td>{item.quantity}</td>
+              <td className="fw-bold text-danger">
                 {(item.price * item.quantity).toLocaleString()}₫
               </td>
             </tr>
@@ -114,7 +129,10 @@ const OrderDetailPage = () => {
 
       <div className="text-end mt-3">
         <h4 className="fw-bold">
-          Tổng cộng: <span className="text-danger">{order.total.toLocaleString()}₫</span>
+          Tổng cộng:{" "}
+          <span className="text-danger">
+            {order.total.toLocaleString()}₫
+          </span>
         </h4>
         <Link to="/orders" className="btn btn-secondary mt-3">
           Quay lại lịch sử đơn hàng

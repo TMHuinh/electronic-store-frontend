@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import productApi from "../api/productApi";
 
 const ProductList = () => {
@@ -11,6 +12,18 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [itemsToShow, setItemsToShow] = useState(16);
   const navigate = useNavigate();
+
+  // ⭐ Hàm hiển thị sao
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (rating >= i) stars.push(<FaStar key={i} className="text-warning" />);
+      else if (rating >= i - 0.5)
+        stars.push(<FaStarHalfAlt key={i} className="text-warning" />);
+      else stars.push(<FaRegStar key={i} className="text-muted" />);
+    }
+    return stars;
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -65,13 +78,13 @@ const ProductList = () => {
               visibleProducts.map((p) => (
                 <Col key={p._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
                   <Card
-                    className="shadow-sm border-0 rounded-4 cursor-pointer"
+                    className="shadow-sm border-0 rounded-4 cursor-pointer h-100"
                     onClick={() => navigate(`/product/${p._id}`)}
                   >
                     <Card.Img
                       variant="top"
                       src={
-                        p.images?.[1]?.url ||
+                        p.images?.[0]?.url ||
                         "https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760331029/products/bqlaqfriqvzfnagwpoic.jpg"
                       }
                       alt={p.name}
@@ -83,12 +96,25 @@ const ProductList = () => {
                       }}
                     />
                     <Card.Body>
-                      <Card.Title className="text-truncate">{p.name}</Card.Title>
-                      <Card.Text className="text-muted small">
+                      <Card.Title
+                        className="text-truncate"
+                        title={p.name}
+                      >
+                        {p.name}
+                      </Card.Title>
+                      <Card.Text className="text-muted small mb-2">
                         <span className="fw-bold text-primary">
                           {p.price?.toLocaleString()}₫
                         </span>
                       </Card.Text>
+
+                      {/* ⭐ Thêm sao đánh giá */}
+                      <div className="d-flex align-items-center">
+                        {renderStars(p.rating || 0)}
+                        <small className="text-muted ms-1">
+                          ({p.numReviews || 0})
+                        </small>
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>

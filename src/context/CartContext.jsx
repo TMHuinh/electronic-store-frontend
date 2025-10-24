@@ -25,7 +25,7 @@ export const CartProvider = ({ children }) => {
       }
     };
     fetchCart();
-  }, [userInfo]);
+  }, []);
 
   const refreshCart = async () => {
     try {

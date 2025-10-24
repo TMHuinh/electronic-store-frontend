@@ -2,17 +2,24 @@ import React, { useEffect, useState } from "react";
 import orderApi from "../api/orderApi";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Table, Badge, Spinner } from "react-bootstrap";
+import { Table, Badge, Spinner, Button, ButtonGroup, Pagination } from "react-bootstrap";
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await orderApi.getMyOrders();
         setOrders(res.data);
+        setFilteredOrders(res.data);
       } catch (err) {
         console.error(err);
         toast.error("Không thể tải danh sách đơn hàng");
@@ -23,6 +30,20 @@ const OrderHistoryPage = () => {
     fetchOrders();
   }, []);
 
+  // Hàm lọc đơn hàng theo trạng thái
+  const handleFilterChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+    if (status === "all") {
+      setFilteredOrders(orders);
+    } else {
+      setFilteredOrders(
+        orders.filter((order) => order.status.toLowerCase() === status)
+      );
+    }
+  };
+
+  // Badge trạng thái
   const getStatusBadge = (status) => {
     switch (status.toLowerCase()) {
       case "processing":
@@ -37,6 +58,14 @@ const OrderHistoryPage = () => {
         return <Badge bg="secondary">{status}</Badge>;
     }
   };
+
+  // Xử lý phân trang
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (loading)
     return (
@@ -59,6 +88,44 @@ const OrderHistoryPage = () => {
   return (
     <div className="container">
       <h2 className="mb-5 fw-bold text-primary text-center">Lịch sử đơn hàng</h2>
+
+      {/* Bộ lọc trạng thái */}
+      <div className="row d-flex justify-content-center mb-4">
+        <ButtonGroup>
+          <Button
+            variant={statusFilter === "all" ? "primary" : "outline-primary"}
+            onClick={() => handleFilterChange("all")}
+          >
+            Tất cả
+          </Button>
+          <Button
+            variant={statusFilter === "processing" ? "primary" : "outline-primary"}
+            onClick={() => handleFilterChange("processing")}
+          >
+            Đang xử lý
+          </Button>
+          <Button
+            variant={statusFilter === "shipped" ? "primary" : "outline-primary"}
+            onClick={() => handleFilterChange("shipped")}
+          >
+            Đang giao
+          </Button>
+          <Button
+            variant={statusFilter === "delivered" ? "primary" : "outline-primary"}
+            onClick={() => handleFilterChange("delivered")}
+          >
+            Đã giao
+          </Button>
+          <Button
+            variant={statusFilter === "cancelled" ? "primary" : "outline-primary"}
+            onClick={() => handleFilterChange("cancelled")}
+          >
+            Đã hủy
+          </Button>
+        </ButtonGroup>
+      </div>
+
+      {/* Bảng đơn hàng */}
       <Table hover responsive bordered>
         <thead className="table-light">
           <tr>
@@ -70,7 +137,7 @@ const OrderHistoryPage = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
+          {currentOrders.map((order) => (
             <tr key={order._id}>
               <td className="align-middle">{order._id}</td>
               <td className="align-middle">
@@ -84,7 +151,7 @@ const OrderHistoryPage = () => {
                 {order.total.toLocaleString()}₫
               </td>
               <td className="align-middle">{getStatusBadge(order.status)}</td>
-              <td className="align-middle">
+              <td className="align-middle text-center">
                 <Link
                   to={`/orders/${order._id}`}
                   className="btn btn-sm btn-primary"
@@ -96,6 +163,23 @@ const OrderHistoryPage = () => {
           ))}
         </tbody>
       </Table>
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>
+            {[...Array(totalPages)].map((_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPage}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
