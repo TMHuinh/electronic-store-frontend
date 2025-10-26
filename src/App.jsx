@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
+import VerifyPage from "./pages/VerifyPage";
 
 // TitleHandler component
 const TitleHandler = () => {
@@ -39,6 +40,7 @@ const TitleHandler = () => {
         else if (location.pathname.startsWith("/checkout")) title = "Thanh toán";
         else if (location.pathname.startsWith("/orders/")) title = "Chi tiết đơn hàng";
         else if (location.pathname.startsWith("/orders")) title = "Đơn hàng";
+        else if (location.pathname.startsWith("/verify/")) title = "Xác thực thông tin";
 
         // Trang chi tiết sản phẩm
         else if (location.pathname.startsWith("/product/")) {
@@ -91,6 +93,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify/:token" element={<VerifyPage />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/category/:id" element={<ProductList />} />
             <Route path="/search/:keyword" element={<SearchPage />} />
@@ -102,6 +105,7 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/orders/:id" element={<OrderDetailPage />} />
+            
           </Routes>
         </Container>
       </main>

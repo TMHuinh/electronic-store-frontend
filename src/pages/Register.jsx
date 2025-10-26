@@ -25,15 +25,15 @@ const RegisterPage = () => {
       const res = await userApi.register(form);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      alert("Đăng ký thành công!");
-      navigate("/");
+      alert(res.data.message || "Vui lòng kiểm tra email để xác thực tài khoản.");
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Đăng ký thất bại");
     }
   };
 
   return (
-    <Container className="my-5">
+    <Container className="my-1">
       <Row className="justify-content-md-center">
         <Col md={6}>
           <h3 className="text-center mb-4">Đăng ký tài khoản</h3>

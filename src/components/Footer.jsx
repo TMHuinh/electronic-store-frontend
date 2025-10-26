@@ -40,7 +40,7 @@ const Footer = () => {
         <Row>
           {/* Thông tin cửa hàng */}
           <Col md={4} className="mb-4">
-            <h5 className="text-primary fw-bold">E-Shop</h5>
+            <h5 className="text-primary fw-bold">HUINH</h5>
             <p className="small text-muted">
               Cung cấp thiết bị điện tử chính hãng, chất lượng cao và giá tốt nhất.
             </p>
@@ -98,7 +98,7 @@ const Footer = () => {
 
         <Row>
           <Col className="text-center text-muted small py-3">
-            © {new Date().getFullYear()} E-Shop. All rights reserved.
+            © {new Date().getFullYear()} HUINH. All rights reserved.
           </Col>
         </Row>
       </Container>

@@ -199,9 +199,9 @@ const Header = () => {
           <Navbar.Brand
             as={Link}
             to="/"
-            className="fw-bold fs-1 text-primary me-4"
+            className="fw-bold fs-1 text-primary ms-4"
           >
-            E-Shop
+            HUINH
           </Navbar.Brand>
 
           {/* Tìm kiếm + danh mục */}
