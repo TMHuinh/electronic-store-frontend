@@ -99,13 +99,14 @@ const Header = () => {
     }
   };
 
-  // 🚪 Đăng xuất
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("userInfo");
     setUserInfo(null);
     window.dispatchEvent(new Event("userChange"));
-    navigate("/");
+    navigate("/login");
   };
+
 
   return (
     <header>

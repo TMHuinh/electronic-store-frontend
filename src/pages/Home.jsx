@@ -141,7 +141,7 @@ const Home = () => {
                   >
                     <Card.Img
                       variant="top"
-                      src={p.images?.[1]?.url ||
+                      src={p.images?.[0]?.url ||
                         "https://bizweb.dktcdn.net/thumb/1024x1024/100/228/168/products/sdp1.jpg?v=1582190218723"}
                       alt={p.name}
                       style={{ height: "220px", objectFit: "cover" }}

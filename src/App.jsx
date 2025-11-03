@@ -20,10 +20,18 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import VerifyPage from "./pages/VerifyPage";
 
-// TitleHandler component
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProductAdminPage from "./pages/admin/ProductAdminPage";
+import CategoryAdminPage from "./pages/admin/CategoryAdminPage";
+import BrandAdminPage from "./pages/admin/BrandAdminPage";
+import UserAdminPage from "./pages/admin/UserAdminPage";
+import OrderAdminPage from "./pages/admin/OrderAdminPage";
+import AdminRoute from "./components/AdminRoute";
+import DashboardHome from "./pages/admin/DashboardHome";
+
 const TitleHandler = () => {
   const location = useLocation();
-  const params = useParams(); // Truyền dynamic params từ Route
+  const params = useParams();
 
   useEffect(() => {
     const fetchDynamicTitle = async () => {
@@ -41,20 +49,23 @@ const TitleHandler = () => {
         else if (location.pathname.startsWith("/orders/")) title = "Chi tiết đơn hàng";
         else if (location.pathname.startsWith("/orders")) title = "Đơn hàng";
         else if (location.pathname.startsWith("/verify/")) title = "Xác thực thông tin";
+        else if (location.pathname.startsWith("/admin/dashboard")) title = "Quản trị";
+        else if (location.pathname.startsWith("/admin/products")) title = "Quản trị sản phẩm";
+        else if (location.pathname.startsWith("/admin/categories")) title = "Quản trị danh mục";
+        else if (location.pathname.startsWith("/admin/brands")) title = "Quản trị thương hiệu";
+        else if (location.pathname.startsWith("/admin/users")) title = "Quản trị người dùng";
+        else if (location.pathname.startsWith("/admin/orders")) title = "Quản trị đơn hàng";
 
-        // Trang chi tiết sản phẩm
         else if (location.pathname.startsWith("/product/")) {
           const id = location.pathname.split("/")[2];
           const res = await axiosClient.get(`/products/${id}`);
           title = res.data.name;
         }
-        // Trang danh mục
         else if (location.pathname.startsWith("/category/")) {
           const id = location.pathname.split("/")[2];
           const res = await axiosClient.get(`/categories/${id}`);
           title = res.data.name;
         }
-        // Trang đánh giá
         else if (location.pathname.startsWith("/reviews/product/")) {
           const id = location.pathname.split("/")[3];
           const res = await axiosClient.get(`/products/${id}`);
@@ -78,7 +89,7 @@ const TitleHandler = () => {
     fetchDynamicTitle();
   }, [location.pathname]);
 
-  return null; // Không render gì cả
+  return null;
 };
 
 function App() {
@@ -90,6 +101,7 @@ function App() {
       <main className="py-5 mt-1">
         <Container>
           <Routes>
+            {/* 🏠 Các route người dùng */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -105,7 +117,19 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/orders/:id" element={<OrderDetailPage />} />
-            
+
+            {/* 🔒 Các route admin – được bảo vệ */}
+            <Route path="/admin" element={<AdminRoute />}>
+              <Route element={<AdminDashboard />}>
+                <Route path="dashboard" element={<DashboardHome />} />
+                <Route path="products" element={<ProductAdminPage />} />
+                <Route path="categories" element={<CategoryAdminPage />} />
+                <Route path="brands" element={<BrandAdminPage />} />
+                <Route path="users" element={<UserAdminPage />} />
+                <Route path="orders" element={<OrderAdminPage />} />
+              </Route>
+            </Route>
+
           </Routes>
         </Container>
       </main>
