@@ -18,8 +18,11 @@ const OrderHistoryPage = () => {
     const fetchOrders = async () => {
       try {
         const res = await orderApi.getMyOrders();
-        setOrders(res.data);
-        setFilteredOrders(res.data);
+        const sorted = [...res.data].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setOrders(sorted);
+        setFilteredOrders(sorted);
       } catch (err) {
         console.error(err);
         toast.error("Không thể tải danh sách đơn hàng");

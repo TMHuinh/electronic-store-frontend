@@ -29,6 +29,7 @@ import OrderAdminPage from "./pages/admin/OrderAdminPage";
 import AdminRoute from "./components/AdminRoute";
 import DashboardHome from "./pages/admin/DashboardHome";
 
+
 const TitleHandler = () => {
   const location = useLocation();
   const params = useParams();
@@ -44,44 +45,38 @@ const TitleHandler = () => {
         else if (location.pathname.startsWith("/products")) title = "Danh sách sản phẩm";
         else if (location.pathname.startsWith("/search/")) title = "Kết quả tìm kiếm";
         else if (location.pathname.startsWith("/cart")) title = "Giỏ hàng";
-        else if (location.pathname.startsWith("/profile")) title = "Thông tin";
+        else if (location.pathname.startsWith("/profile")) title = "Thông tin cá nhân";
         else if (location.pathname.startsWith("/checkout")) title = "Thanh toán";
         else if (location.pathname.startsWith("/orders/")) title = "Chi tiết đơn hàng";
-        else if (location.pathname.startsWith("/orders")) title = "Đơn hàng";
-        else if (location.pathname.startsWith("/verify/")) title = "Xác thực thông tin";
-        else if (location.pathname.startsWith("/admin/dashboard")) title = "Quản trị";
-        else if (location.pathname.startsWith("/admin/products")) title = "Quản trị sản phẩm";
-        else if (location.pathname.startsWith("/admin/categories")) title = "Quản trị danh mục";
-        else if (location.pathname.startsWith("/admin/brands")) title = "Quản trị thương hiệu";
-        else if (location.pathname.startsWith("/admin/users")) title = "Quản trị người dùng";
-        else if (location.pathname.startsWith("/admin/orders")) title = "Quản trị đơn hàng";
+        else if (location.pathname.startsWith("/orders")) title = "Lịch sử đơn hàng";
+        else if (location.pathname.startsWith("/verify/")) title = "Xác thực tài khoản";
+        else if (location.pathname.startsWith("/admin/dashboard")) title = "Trang quản trị";
+        else if (location.pathname.startsWith("/admin/products")) title = "Quản lý sản phẩm";
+        else if (location.pathname.startsWith("/admin/categories")) title = "Quản lý danh mục";
+        else if (location.pathname.startsWith("/admin/brands")) title = "Quản lý thương hiệu";
+        else if (location.pathname.startsWith("/admin/users")) title = "Quản lý người dùng";
+        else if (location.pathname.startsWith("/admin/orders")) title = "Quản lý đơn hàng";
 
         else if (location.pathname.startsWith("/product/")) {
           const id = location.pathname.split("/")[2];
           const res = await axiosClient.get(`/products/${id}`);
           title = res.data.name;
-        }
-        else if (location.pathname.startsWith("/category/")) {
+        } else if (location.pathname.startsWith("/category/")) {
           const id = location.pathname.split("/")[2];
           const res = await axiosClient.get(`/categories/${id}`);
           title = res.data.name;
-        }
-        else if (location.pathname.startsWith("/reviews/product/")) {
+        } else if (location.pathname.startsWith("/reviews/product/")) {
           const id = location.pathname.split("/")[3];
           const res = await axiosClient.get(`/products/${id}`);
           title = `Đánh giá ${res.data.name}`;
-        }
-        else if (location.pathname.startsWith("/brand/")) {
+        } else if (location.pathname.startsWith("/brand/")) {
           const id = location.pathname.split("/")[2];
-          if (id) {
-            const res = await axiosClient.get(`/brands/${id}`);
-            title = res.data.name;
-          }
+          const res = await axiosClient.get(`/brands/${id}`);
+          title = res.data.name;
         }
 
         document.title = `${title} | Electronic Store`;
       } catch (err) {
-        console.error("Error fetching title:", err);
         document.title = "Electronic Store";
       }
     };
@@ -92,46 +87,54 @@ const TitleHandler = () => {
   return null;
 };
 
+
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
       <Header />
       <TitleHandler />
+
       <main className="py-5 mt-1">
-        <Container>
-          <Routes>
-            {/* 🏠 Các route người dùng */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify/:token" element={<VerifyPage />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/category/:id" element={<ProductList />} />
-            <Route path="/search/:keyword" element={<SearchPage />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/reviews/product/:id" element={<ListReview />} />
-            <Route path="/brand/:id" element={<ProductList />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/orders" element={<OrderHistoryPage />} />
-            <Route path="/orders/:id" element={<OrderDetailPage />} />
+        <Routes>
+          {/* 🎯 Layout người dùng có Container */}
+          <Route
+            path="/*"
+            element={
+              <Container>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/verify/:token" element={<VerifyPage />} />
+                  <Route path="/products" element={<ProductList />} />
+                  <Route path="/category/:id" element={<ProductList />} />
+                  <Route path="/search/:keyword" element={<SearchPage />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/reviews/product/:id" element={<ListReview />} />
+                  <Route path="/brand/:id" element={<ProductList />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/orders" element={<OrderHistoryPage />} />
+                  <Route path="/orders/:id" element={<OrderDetailPage />} />
+                </Routes>
+              </Container>
+            }
+          />
 
-            {/* 🔒 Các route admin – được bảo vệ */}
-            <Route path="/admin" element={<AdminRoute />}>
-              <Route element={<AdminDashboard />}>
-                <Route path="dashboard" element={<DashboardHome />} />
-                <Route path="products" element={<ProductAdminPage />} />
-                <Route path="categories" element={<CategoryAdminPage />} />
-                <Route path="brands" element={<BrandAdminPage />} />
-                <Route path="users" element={<UserAdminPage />} />
-                <Route path="orders" element={<OrderAdminPage />} />
-              </Route>
+          {/* 🧑‍💼 Layout admin không có Container */}
+          <Route path="/admin" element={<AdminRoute />}>
+            <Route element={<AdminDashboard />}>
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="products" element={<ProductAdminPage />} />
+              <Route path="categories" element={<CategoryAdminPage />} />
+              <Route path="brands" element={<BrandAdminPage />} />
+              <Route path="users" element={<UserAdminPage />} />
+              <Route path="orders" element={<OrderAdminPage />} />
             </Route>
-
-          </Routes>
-        </Container>
+          </Route>
+        </Routes>
       </main>
       <Footer />
     </BrowserRouter>

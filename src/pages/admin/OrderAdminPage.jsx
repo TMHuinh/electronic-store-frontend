@@ -30,8 +30,11 @@ const OrderAdminPage = () => {
       setLoading(true);
       const res = await orderApi.getOrders();
       const data = res.data || res;
-      setOrders(data);
-      setFilteredOrders(data);
+      const sorted = [...data].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setOrders(sorted);
+      setFilteredOrders(sorted);
     } catch (err) {
       console.error(err);
       setError("Không thể tải danh sách đơn hàng");
