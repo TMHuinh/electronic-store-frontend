@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
+import axiosClient from "../api/axiosClient";
 
 const VerifyPage = () => {
   const { token } = useParams();
@@ -17,7 +18,7 @@ const VerifyPage = () => {
       hasVerified.current = true;
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/verify/${token}`);
+        const res = await axiosClient.get(`/users/verify/${token}`);
         setStatus("success");
         setMessage(res.data.message);
         setTimeout(() => navigate("/login"), 5000);
