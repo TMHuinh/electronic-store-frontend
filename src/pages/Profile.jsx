@@ -14,11 +14,11 @@ const Profile = () => {
     password: "",
   });
 
-  // ✅ Lấy token riêng và user info riêng
+  // Lấy token và userInfo từ localStorage
   const token = localStorage.getItem("token");
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  // 🟢 Lấy thông tin user khi vào trang
+  // Lấy thông tin user khi vào trang
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -26,7 +26,7 @@ const Profile = () => {
           toast.error("Vui lòng đăng nhập!");
           return;
         }
-        const res = await userApi.getProfile(token); // ✅ dùng token riêng
+        const res = await userApi.getProfile(token);
         setUser({
           name: res.data.name || "",
           email: res.data.email || "",
@@ -43,16 +43,21 @@ const Profile = () => {
     fetchProfile();
   }, [token]);
 
-  // 🟣 Cập nhật profile
+  // Cập nhật profile
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setUpdating(true);
-      const res = await userApi.updateProfile(user, token); // ✅ dùng token riêng
-      toast.success("Cập nhật thông tin thành công!");
+      const res = await userApi.updateProfile(user, token);
 
-      // cập nhật localStorage userInfo
+      // Cập nhật localStorage với user và token mới
       localStorage.setItem("userInfo", JSON.stringify(res.data.user));
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
+      toast.success("Cập nhật thông tin thành công!");
+      setUser((prev) => ({ ...prev, password: "" })); // reset password field
     } catch (error) {
       toast.error(error.response?.data?.message || "Cập nhật thất bại");
     } finally {
@@ -71,7 +76,9 @@ const Profile = () => {
     <Container className="my-5">
       <Row className="justify-content-center">
         <Col md={6}>
-          <h2 className="text-center mb-4 fw-bold text-primary">👤 Thông tin cá nhân</h2>
+          <h2 className="text-center mb-4 fw-bold text-primary">
+            👤 Thông tin cá nhân
+          </h2>
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">

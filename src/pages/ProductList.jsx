@@ -76,7 +76,7 @@ const ProductList = () => {
               </Col>
             ) : (
               visibleProducts.map((p) => (
-                <Col key={p._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+                <Col key={p._id} xs={6} sm={6} md={4} lg={3} className="mb-4">
                   <Card
                     className="shadow-sm border-0 rounded-4 cursor-pointer h-100"
                     onClick={() => navigate(`/product/${p._id}`)}
@@ -89,11 +89,12 @@ const ProductList = () => {
                       }
                       alt={p.name}
                       style={{
-                        height: "200px",
-                        objectFit: "cover",
-                        borderTopLeftRadius: "1rem",
-                        borderTopRightRadius: "1rem",
-                      }}
+                          height: "30vh",
+                          maxHeight: "280px",
+                          objectFit: "cover",
+                          borderTopLeftRadius: "1rem",
+                          borderTopRightRadius: "1rem",
+                        }}
                     />
                     <Card.Body>
                       <Card.Title

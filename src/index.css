@@ -1,0 +1,62 @@
+/* Responsive helpers and overrides for better small-screen layout */
+
+/* Make images responsive by default */
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Ensure main container has comfortable padding on small screens */
+.container {
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+}
+
+/* Tables: allow horizontal scroll on small screens instead of breaking layout */
+.table-responsive-custom {
+	width: 100%;
+	overflow-x: auto;
+}
+
+/* Cart mobile card style */
+.cart-mobile-card {
+	border: 1px solid #e9ecef;
+	border-radius: 8px;
+	padding: 0.75rem;
+	margin-bottom: 0.75rem;
+	background: #fff;
+}
+
+.cart-mobile-card .product-row {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.cart-mobile-card .product-info {
+	flex: 1 1 auto;
+}
+
+.cart-mobile-card .product-actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+/* Make quantity buttons and primary actions full width on small screens */
+@media (max-width: 767.98px) {
+	.btn-block-sm {
+		display: block;
+		width: 100%;
+	}
+}
+
+/* Reduce image size inside cart rows on small screens */
+@media (max-width: 575.98px) {
+	.cart-mobile-card img {
+		width: 64px;
+		height: auto;
+		object-fit: cover;
+	}
+}
+

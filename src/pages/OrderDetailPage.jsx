@@ -89,43 +89,74 @@ const OrderDetailPage = () => {
       </Card>
 
       <h5 className="mb-3">Sản phẩm trong đơn</h5>
-      <Table hover responsive bordered>
-        <thead className="table-light">
-          <tr>
-            <th>Sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Tổng</th>
-          </tr>
-        </thead>
-        <tbody>
-          {order.items.map((item, index) => (
-            <tr
-              key={item.productId || index}
-              className="align-middle"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate(`/product/${item.productId}`)}
-            >
-              <td className="d-flex align-items-center">
-                <Image
-                  src={item.image || "/no-image.png"}
-                  alt={item.name}
-                  width={50}
-                  height={50}
-                  className="me-2"
-                  rounded
-                />
-                {item.name}
-              </td>
-              <td>{item.price.toLocaleString()}₫</td>
-              <td>{item.quantity}</td>
-              <td className="fw-bold text-danger">
-                {(item.price * item.quantity).toLocaleString()}₫
-              </td>
+
+      {/* Desktop / tablet: table */}
+      <div className="d-none d-md-block">
+        <Table hover responsive bordered>
+          <thead className="table-light">
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Giá</th>
+              <th>Số lượng</th>
+              <th>Tổng</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {order.items.map((item, index) => (
+              <tr
+                key={item.productId || index}
+                className="align-middle"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/product/${item.productId}`)}
+              >
+                <td className="d-flex align-items-center">
+                  <Image
+                    src={item.image || "/no-image.png"}
+                    alt={item.name}
+                    width={50}
+                    height={50}
+                    className="me-2"
+                    rounded
+                  />
+                  {item.name}
+                </td>
+                <td>{item.price.toLocaleString()}₫</td>
+                <td>{item.quantity}</td>
+                <td className="fw-bold text-danger">
+                  {(item.price * item.quantity).toLocaleString()}₫
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+
+      {/* Mobile: stacked item cards */}
+      <div className="d-md-none">
+        {order.items.map((item, index) => (
+          <div
+            key={item.productId || index}
+            className="cart-mobile-card"
+            onClick={() => navigate(`/product/${item.productId}`)}
+            style={{ cursor: "pointer" }}
+          >
+            <div className="product-row">
+              <img
+                src={item.image || "/no-image.png"}
+                alt={item.name}
+                width="80"
+                className="rounded"
+              />
+              <div className="product-info">
+                <div className="fw-semibold">{item.name}</div>
+                <div className="text-muted small">Giá: {item.price.toLocaleString()}₫</div>
+                <div className="text-muted small">Số lượng: {item.quantity}</div>
+                <div className="fw-bold mt-2 text-danger">Tổng: {(item.price * item.quantity).toLocaleString()}₫</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div className="text-end mt-3">
         <h4 className="fw-bold">

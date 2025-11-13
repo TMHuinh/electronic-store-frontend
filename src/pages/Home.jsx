@@ -43,13 +43,13 @@ const Home = () => {
   return (
     <div className="home-page">
       {/* 🔹 1. Slider */}
-      <Carousel fade className="shadow-sm rounded mb-4">
+      <Carousel fade className="shadow-sm rounded mb-4 home-banner">
         <Carousel.Item>
           <img
             className="d-block w-100 rounded"
             src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760978844/products/ezux3gpyahq7zqzonon3.png"
             alt="Slide 1"
-            style={{ height: "450px", objectFit: "" }}
+            style={{ maxHeight: "450px", objectFit: "cover" }}
           />
         </Carousel.Item>
         <Carousel.Item>
@@ -57,7 +57,7 @@ const Home = () => {
             className="d-block w-100 rounded"
             src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760980888/products/tmyekxt3q0t11mreabqf.jpg"
             alt="Slide 2"
-            style={{ height: "450px", objectFit: "" }}
+            style={{ maxHeight: "450px", objectFit: "cover" }}
           />
         </Carousel.Item>
       </Carousel>
@@ -79,8 +79,8 @@ const Home = () => {
           </div>
         ) : (
           <Row className="g-4">
-            {flashSale.map((p) => (
-              <Col key={p._id} xs={12} sm={6} md={3}>
+              {flashSale.map((p) => (
+              <Col key={p._id} xs={6} sm={6} md={4} lg={3}>
                 <Card
                   className="border-0 shadow-sm h-100 rounded-4 overflow-hidden"
                   onClick={() => navigate(`/product/${p._id}`)}
@@ -98,10 +98,7 @@ const Home = () => {
                         objectFit: "cover",
                       }}
                     />
-                    <Badge
-                      bg="danger"
-                      className="position-absolute top-0 end-0 m-2"
-                    >
+                    <Badge bg="danger" className="position-absolute top-0 end-0 m-2">
                       -20%
                     </Badge>
                   </div>
@@ -116,7 +113,7 @@ const Home = () => {
                   </Card.Body>
                 </Card>
               </Col>
-            ))}
+              ))}
           </Row>
         )}
       </Container>
@@ -133,7 +130,7 @@ const Home = () => {
           <>
             <Row className="g-4">
               {featured.map((p) => (
-                <Col key={p._id} xs={12} sm={6} md={4} lg={3}>
+                <Col key={p._id} xs={6} sm={6} md={4} lg={3}>
                   <Card
                     className="border-0 shadow-sm h-100 rounded-4 overflow-hidden"
                     onClick={() => navigate(`/product/${p._id}`)}
@@ -144,7 +141,7 @@ const Home = () => {
                       src={p.images?.[0]?.url ||
                         "https://bizweb.dktcdn.net/thumb/1024x1024/100/228/168/products/sdp1.jpg?v=1582190218723"}
                       alt={p.name}
-                      style={{ height: "220px", objectFit: "cover" }}
+                      style={{ height: "30vh", maxHeight: "320px", objectFit: "cover" }}
                     />
                     <Card.Body>
                       <Card.Title className="text-truncate">{p.name}</Card.Title>
@@ -175,7 +172,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760980019/products/mg2e1cgkxap01dhc6uk7.jpg"
                 alt="Banner 1"
-                style={{ height: "220px", objectFit: "" }}
+                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>
@@ -184,7 +181,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981074/products/ggduoo62ic9op12dibit.webp"
                 alt="Banner 2"
-                style={{ height: "220px", objectFit: "" }}
+                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>
@@ -193,7 +190,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981387/products/ysua5eppa73ygutcm4qt.jpg"
                 alt="Banner 3"
-                style={{ height: "220px", objectFit: "" }}
+                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>

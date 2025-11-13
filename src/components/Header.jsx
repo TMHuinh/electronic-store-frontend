@@ -68,8 +68,8 @@ const Header = () => {
         setShowMenu(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside, true);
+    return () => document.removeEventListener("click", handleClickOutside, true);
   }, []);
 
   // 🔍 Gọi API gợi ý khi người dùng gõ
@@ -110,23 +110,96 @@ const Header = () => {
 
   return (
     <header>
-      {/* 🔹 Top bar phụ */}
+      {/* 🔹 TOP BAR */}
       <div
         style={{
           backgroundColor: "#f8f9fa",
           fontSize: "0.9rem",
           borderBottom: "1px solid #e9ecef",
+          paddingLeft: 30,
+          paddingRight: 30,
         }}
       >
-        <Container>
+        <Container fluid="lg">
           <Row className="py-2 align-items-center text-center text-md-start">
-            <Col md={6} className="text-muted mb-2 mb-md-0">
+            {/* Cột trái */}
+            <Col xs={12} md={6} className="text-muted mb-2 mb-md-0">
               <FaPhoneAlt className="me-2 text-primary" />
               Hỗ trợ khách hàng: <strong>1900 123 456</strong>
             </Col>
 
-            <Col md={6} className="text-md-end">
-              <Nav className="justify-content-end small align-items-center flex-wrap">
+            {/* Cột phải */}
+            <Col xs={12} md={6}>
+              {/* Mobile layout: chia 2 bên */}
+              <div className="d-flex justify-content-between align-items-center d-md-none">
+                <LinkContainer to="/orders">
+                  <Nav.Link className="text-muted d-flex align-items-center">
+                    <FaTruck className="me-1 text-secondary" />
+                    Theo dõi đơn hàng
+                  </Nav.Link>
+                </LinkContainer>
+
+                <div className="text-end">
+                  {!userInfo ? (
+                    <>
+                      <LinkContainer to="/login">
+                        <Nav.Link className="text-muted me-2 d-inline-block">
+                          Đăng nhập
+                        </Nav.Link>
+                      </LinkContainer>
+                      <LinkContainer to="/register">
+                        <Nav.Link className="text-muted d-inline-block">
+                          Đăng ký
+                        </Nav.Link>
+                      </LinkContainer>
+                    </>
+                  ) : (
+                    // Chỉ phần menu user được chỉnh sửa
+                    <div className="position-relative d-inline-block" ref={menuRef}>
+                      <button
+                        className="btn btn-link text-muted d-inline-flex align-items-center p-0"
+                        onClick={() => setShowMenu(!showMenu)}
+                        style={{ textDecoration: "none", fontSize: "0.8rem" }}
+                      >
+                        <FaUser className="me-2 text-secondary" />
+                        {userInfo.name}
+                      </button>
+
+                      {showMenu && (
+                        <div
+                          className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm"
+                          style={{ zIndex: 1000, minWidth: "150px" }}
+                        >
+                          <LinkContainer to="/profile">
+                            <Nav.Link className="text-dark px-3 py-2">Trang cá nhân</Nav.Link>
+                          </LinkContainer>
+
+                          {userInfo.isAdmin && (
+                            <>
+                              <hr className="my-1" />
+                              <LinkContainer to="/admin/dashboard">
+                                <Nav.Link className="text-danger px-3 py-2">Quản trị</Nav.Link>
+                              </LinkContainer>
+                            </>
+                          )}
+
+                          <hr className="my-1" />
+                          {/* Dùng onMouseDown để logout hoạt động trước khi menu bị đóng */}
+                          <Nav.Link
+                            onMouseDown={handleLogout}
+                            className="text-dark px-3 py-2"
+                          >
+                            Đăng xuất
+                          </Nav.Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Desktop layout */}
+              <Nav className="justify-content-end align-items-center small flex-wrap d-none d-md-flex">
                 <LinkContainer to="/orders">
                   <Nav.Link className="text-muted me-3 d-flex align-items-center">
                     <FaTruck className="me-1 text-secondary" />
@@ -148,12 +221,11 @@ const Header = () => {
                     <button
                       className="btn btn-link text-muted d-inline-flex align-items-center p-0"
                       onClick={() => setShowMenu(!showMenu)}
-                      style={{ textDecoration: "none", fontSize: "0.75rem" }}
+                      style={{ textDecoration: "none", fontSize: "0.8rem" }}
                     >
                       <FaUser className="me-2 text-secondary" />
                       {userInfo.name}
                     </button>
-
                     {showMenu && (
                       <div
                         className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm"
@@ -164,7 +236,6 @@ const Header = () => {
                             Trang cá nhân
                           </Nav.Link>
                         </LinkContainer>
-
                         {userInfo.isAdmin && (
                           <>
                             <hr className="my-1" />
@@ -175,7 +246,6 @@ const Header = () => {
                             </LinkContainer>
                           </>
                         )}
-
                         <hr className="my-1" />
                         <Nav.Link
                           onClick={handleLogout}

@@ -14,6 +14,7 @@ const CheckoutPage = () => {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [user, setUser] = useState({ name: "", phone: "", address: "" });
   const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [errors, setErrors] = useState({});
 
   const token = localStorage.getItem("token");
 
@@ -42,10 +43,20 @@ const CheckoutPage = () => {
   );
   const shippingFee = 20000;
   const total = subtotal + shippingFee;
+  const isFormValid =
+    user.name && user.name.trim() && user.phone && user.phone.trim() && user.address && user.address.trim();
 
   const handleCheckout = async () => {
-    if (!user.name || !user.phone || !user.address)
+    const newErrors = {};
+    if (!user.name || !user.name.trim()) newErrors.name = "Tên không được để trống";
+    if (!user.phone || !user.phone.trim()) newErrors.phone = "Số điện thoại không được để trống";
+    if (!user.address || !user.address.trim()) newErrors.address = "Địa chỉ không được để trống";
+
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
       return toast.error("Vui lòng điền đầy đủ thông tin giao hàng");
+    }
+    setErrors({});
 
     try {
       setPlacingOrder(true);
@@ -100,8 +111,17 @@ const CheckoutPage = () => {
                   type="text"
                   value={user.name}
                   onChange={(e) => setUser({ ...user, name: e.target.value })}
+                  onBlur={() => {
+                    if (!user.name || !user.name.trim())
+                      setErrors((s) => ({ ...s, name: "Tên không được để trống" }));
+                    else setErrors((s) => ({ ...s, name: undefined }));
+                  }}
                   required
+                  aria-invalid={!!errors.name}
                 />
+                {errors.name && (
+                  <Form.Text className="text-danger">{errors.name}</Form.Text>
+                )}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Số điện thoại</Form.Label>
@@ -109,8 +129,17 @@ const CheckoutPage = () => {
                   type="text"
                   value={user.phone}
                   onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                  onBlur={() => {
+                    if (!user.phone || !user.phone.trim())
+                      setErrors((s) => ({ ...s, phone: "Số điện thoại không được để trống" }));
+                    else setErrors((s) => ({ ...s, phone: undefined }));
+                  }}
                   required
+                  aria-invalid={!!errors.phone}
                 />
+                {errors.phone && (
+                  <Form.Text className="text-danger">{errors.phone}</Form.Text>
+                )}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Địa chỉ</Form.Label>
@@ -118,8 +147,17 @@ const CheckoutPage = () => {
                   type="text"
                   value={user.address}
                   onChange={(e) => setUser({ ...user, address: e.target.value })}
+                  onBlur={() => {
+                    if (!user.address || !user.address.trim())
+                      setErrors((s) => ({ ...s, address: "Địa chỉ không được để trống" }));
+                    else setErrors((s) => ({ ...s, address: undefined }));
+                  }}
                   required
+                  aria-invalid={!!errors.address}
                 />
+                {errors.address && (
+                  <Form.Text className="text-danger">{errors.address}</Form.Text>
+                )}
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Phương thức thanh toán</Form.Label>
@@ -185,7 +223,7 @@ const CheckoutPage = () => {
               className="w-100 mt-3"
               variant="success"
               onClick={handleCheckout}
-              disabled={placingOrder}
+              disabled={placingOrder || !isFormValid}
             >
               {placingOrder ? "Đang xử lý..." : "Đặt hàng"}
             </Button>

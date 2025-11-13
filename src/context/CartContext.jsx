@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import cartApi from "../api/cartApi";
+import Swal from "sweetalert2";
 
 const CartContext = createContext();
 
@@ -54,21 +55,51 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeItem = async (productId) => {
+  const removeItem = async (productId, askConfirm = true) => {
     try {
+      if (askConfirm) {
+        const result = await Swal.fire({
+          title: "Xác nhận",
+          text: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Có",
+          cancelButtonText: "Không",
+        });
+
+        if (!result.isConfirmed) return false;
+      }
+
       const res = await cartApi.removeFromCart(productId);
       setCart(res.data);
+      return true;
     } catch (err) {
       console.error("❌ Lỗi xóa sản phẩm:", err);
+      return false;
     }
   };
 
-  const clearCart = async () => {
+  const clearCart = async (askConfirm = true) => {
     try {
+      if (askConfirm) {
+        const result = await Swal.fire({
+          title: "Xác nhận",
+          text: "Bạn có chắc muốn xóa toàn bộ giỏ hàng?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Có",
+          cancelButtonText: "Không",
+        });
+
+        if (!result.isConfirmed) return false;
+      }
+
       await cartApi.clearCart();
       setCart({ items: [] });
+      return true;
     } catch (err) {
       console.error("❌ Lỗi xóa toàn bộ giỏ:", err);
+      return false;
     }
   };
 
