@@ -172,7 +172,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760980019/products/mg2e1cgkxap01dhc6uk7.jpg"
                 alt="Banner 1"
-                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
+                style={{  height: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>
@@ -181,7 +181,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981074/products/ggduoo62ic9op12dibit.webp"
                 alt="Banner 2"
-                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
+                style={{ height: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>
@@ -190,7 +190,7 @@ const Home = () => {
               <Card.Img
                 src="https://res.cloudinary.com/dxjvlcd5s/image/upload/v1760981387/products/ysua5eppa73ygutcm4qt.jpg"
                 alt="Banner 3"
-                style={{ height: "20vh", maxHeight: "220px", objectFit: "cover" }}
+                style={{ height: "220px", objectFit: "cover" }}
               />
             </Card>
           </Col>
