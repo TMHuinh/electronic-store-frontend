@@ -73,7 +73,7 @@ const CheckoutPage = () => {
       });
 
       toast.success("Đặt hàng thành công!");
-      clearCart();
+      clearCart(false);
       navigate("/orders");
     } catch (err) {
       console.error(err);
