@@ -26,7 +26,7 @@ export const CartProvider = ({ children }) => {
       }
     };
     fetchCart();
-  }, []);
+  }, [userInfo]);
 
   const refreshCart = async () => {
     try {
@@ -38,11 +38,18 @@ export const CartProvider = ({ children }) => {
   };
 
   const addItem = async (productId, quantity = 1) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (!userInfo) {
+      throw new Error("Vui lòng đăng nhập để mua hàng");
+    }
+
     try {
       const res = await cartApi.addToCart({ productId, quantity });
       setCart(res.data);
+      return res.data;
     } catch (err) {
       console.error("❌ Lỗi thêm sản phẩm:", err);
+      throw err;
     }
   };
 
@@ -66,7 +73,6 @@ export const CartProvider = ({ children }) => {
           confirmButtonText: "Có",
           cancelButtonText: "Không",
         });
-
         if (!result.isConfirmed) return false;
       }
 
@@ -90,7 +96,6 @@ export const CartProvider = ({ children }) => {
           confirmButtonText: "Có",
           cancelButtonText: "Không",
         });
-
         if (!result.isConfirmed) return false;
       }
 

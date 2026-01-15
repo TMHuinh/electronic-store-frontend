@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
+import productApi from "../api/productApi";
+import { useCart } from "../context/CartContext";
 import {
   Carousel,
   Button,
@@ -11,19 +13,14 @@ import {
   Badge,
   Spinner,
 } from "react-bootstrap";
-import {
-  FaStar,
-  FaStarHalfAlt,
-  FaRegStar,
-  FaShoppingCart,
-} from "react-icons/fa";
+import { FaStar, FaStarHalfAlt, FaRegStar, FaShoppingCart } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { useCart } from "../context/CartContext";
-import productApi from "../api/productApi";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addItem } = useCart();
+
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [related, setRelated] = useState([]);
@@ -31,35 +28,36 @@ const ProductDetail = () => {
   const [comment, setComment] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [userInfo, setUserInfo] = useState(null);
-  const { addItem } = useCart();
   const [canReview, setCanReview] = useState(false);
 
-
+  // Render stars
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) stars.push(<FaStar key={i} className="text-warning" />);
-      else if (rating >= i - 0.5)
-        stars.push(<FaStarHalfAlt key={i} className="text-warning" />);
+      else if (rating >= i - 0.5) stars.push(<FaStarHalfAlt key={i} className="text-warning" />);
       else stars.push(<FaRegStar key={i} className="text-muted" />);
     }
     return stars;
   };
 
+  // Load product, reviews, related
   useEffect(() => {
     const storedUser = localStorage.getItem("userInfo");
-    const user = storedUser ? JSON.parse(storedUser) : null;
-    setUserInfo(user);
+    setUserInfo(storedUser ? JSON.parse(storedUser) : null);
 
     const fetchData = async () => {
       try {
+        // Product
         const resProduct = await axiosClient.get(`/products/${id}`, {
-          headers: user ? { Authorization: `Bearer ${user.token}` } : {},
+          headers: storedUser
+            ? { Authorization: `Bearer ${JSON.parse(storedUser).token}` }
+            : {},
         });
         const productData = resProduct.data;
         setProduct(productData);
 
-        // Lấy review
+        // Reviews
         const resReviews = await axiosClient.get(`/reviews/product/${id}`);
         setReviews(
           resReviews.data.sort(
@@ -67,30 +65,27 @@ const ProductDetail = () => {
           )
         );
 
-        // Lấy sản phẩm liên quan theo category
+        // Related products
         if (productData.category?._id || productData.category) {
-          try {
-            const categoryId =
-              typeof productData.category === "object"
-                ? productData.category._id
-                : productData.category;
-            const resRelated = await productApi.getAll({ category: categoryId });
-            const data = resRelated.data || [];
-
-            const relatedList = data
+          const categoryId =
+            typeof productData.category === "object"
+              ? productData.category._id
+              : productData.category;
+          const resRelated = await productApi.getAll({ category: categoryId });
+          setRelated(
+            resRelated.data
               .filter((p) => p._id !== productData._id)
-              .slice(0, 6);
-
-            setRelated(relatedList);
-          } catch (error) {
-            console.error("Lỗi tải sản phẩm liên quan:", error);
-          }
+              .slice(0, 6)
+          );
         }
-        if (user && productData?._id) {
+
+        // Can review
+        if (storedUser && productData?._id) {
           try {
-            const check = await axiosClient.get(`/reviews/can-review/${productData._id}`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-            });
+            const check = await axiosClient.get(
+              `/reviews/can-review/${productData._id}`,
+              { headers: { Authorization: `Bearer ${JSON.parse(storedUser).token}` } }
+            );
             setCanReview(check.data.canReview);
           } catch {
             setCanReview(false);
@@ -100,12 +95,18 @@ const ProductDetail = () => {
         toast.error("Không tải được sản phẩm hoặc đánh giá");
       }
     };
+
     fetchData();
   }, [id]);
 
+  // Submit review
   const submitReview = async (e) => {
     e.preventDefault();
-    if (!userInfo) return toast.error("Vui lòng đăng nhập để đánh giá");
+    if (!userInfo) {
+      toast.info("Vui lòng đăng nhập để đánh giá");
+      navigate("/login");
+      return;
+    }
 
     try {
       const res = await axiosClient.post(
@@ -124,9 +125,23 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    addItem(product._id, quantity);
-    toast.success("Đã thêm vào giỏ hàng!");
+  // Add to cart
+  const handleAddToCart = async () => {
+    if (!userInfo) {
+      toast.info("Vui lòng đăng nhập để mua hàng");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await addItem(product._id, quantity);
+      toast.success("Đã thêm vào giỏ hàng!");
+    } catch (err) {
+      toast.error(err.message || "Thêm giỏ hàng thất bại");
+      localStorage.removeItem("userInfo");
+      setUserInfo(null);
+      navigate("/login");
+    }
   };
 
   if (!product)
@@ -140,18 +155,18 @@ const ProductDetail = () => {
     product.rating && product.rating > 0
       ? product.rating
       : reviews.length
-        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-        : 0;
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
 
   return (
     <div className="container py-4">
-      {/* Thông tin sản phẩm */}
+      {/* Product Info */}
       <Row className="g-4">
         <Col md={6}>
           {product.images?.length ? (
             <Carousel variant="dark">
-              {product.images.map((img, index) => (
-                <Carousel.Item key={index}>
+              {product.images.map((img, idx) => (
+                <Carousel.Item key={idx}>
                   <img
                     className="d-block w-100 rounded shadow-sm"
                     src={img.url}
@@ -204,16 +219,16 @@ const ProductDetail = () => {
           <div className="d-flex gap-3 mb-3">
             <Button
               variant="outline-primary"
-              className="d-flex align-items-center"
               onClick={handleAddToCart}
               disabled={product.stock === 0}
             >
               <FaShoppingCart className="me-2" /> Thêm vào giỏ
             </Button>
+
             <Button
               variant="danger"
-              onClick={() => {
-                handleAddToCart();
+              onClick={async () => {
+                await handleAddToCart();
                 navigate("/cart");
               }}
               disabled={product.stock === 0}
@@ -225,15 +240,13 @@ const ProductDetail = () => {
           <Card className="p-3 border-0 shadow-sm bg-light">
             <Card.Body>
               <h5 className="fw-bold">Mô tả sản phẩm</h5>
-              <Card.Text className="text-secondary">
-                {product.description}
-              </Card.Text>
+              <Card.Text className="text-secondary">{product.description}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Đánh giá sản phẩm */}
+      {/* Reviews */}
       <Row className="mt-5 g-4">
         <Col md={6}>
           <h4 className="fw-semibold mb-3">Đánh giá sản phẩm</h4>
@@ -267,6 +280,7 @@ const ProductDetail = () => {
           )}
         </Col>
 
+        {/* Add Review */}
         <Col md={6}>
           <h4 className="fw-semibold mb-3">Thêm đánh giá của bạn</h4>
           {userInfo ? (
@@ -279,8 +293,9 @@ const ProductDetail = () => {
                       {[1, 2, 3, 4, 5].map((num) => (
                         <FaStar
                           key={num}
-                          className={`me-1 fs-4 cursor-pointer ${num <= rating ? "text-warning" : "text-muted"
-                            }`}
+                          className={`me-1 fs-4 cursor-pointer ${
+                            num <= rating ? "text-warning" : "text-muted"
+                          }`}
                           onClick={() => setRating(num)}
                         />
                       ))}
@@ -326,7 +341,7 @@ const ProductDetail = () => {
         </Col>
       </Row>
 
-      {/* 🔹 SẢN PHẨM LIÊN QUAN */}
+      {/* Related Products */}
       {related.length > 0 && (
         <div className="mt-5">
           <h4 className="fw-semibold mb-4">Sản phẩm liên quan</h4>
@@ -341,17 +356,10 @@ const ProductDetail = () => {
                   <Card.Img
                     variant="top"
                     src={item.images?.[0]?.url || "/placeholder.png"}
-                    style={{
-                      height: "200px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                    }}
+                    style={{ height: "200px", objectFit: "cover", borderRadius: "8px" }}
                   />
                   <Card.Body>
-                    <Card.Title
-                      className="fs-6 text-truncate"
-                      title={item.name}
-                    >
+                    <Card.Title className="fs-6 text-truncate" title={item.name}>
                       {item.name}
                     </Card.Title>
                     <div className="text-danger fw-bold mb-2">
